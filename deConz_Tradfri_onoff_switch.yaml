@@ -1,0 +1,69 @@
+blueprint:
+  name: deConz - IKEA Tradfri on/off switch
+  description: Control anything using IKEA Tradfri on/off switch
+
+  domain: automation
+
+  input:
+    remote:
+      name: Switch
+      description: IKEA Tradfri on/off switch to use
+      selector:
+        device:
+          integration: deconz
+          manufacturer: IKEA of Sweden
+          model: TRADFRI on/off switch
+
+    button_on_short:
+      name: ON button short press
+      description: Action to run on press of On button
+      default: []
+      selector:
+        action:
+    button_off_short:
+      name: OFF button short press
+      description: Action to run on press of Off button
+      default: []
+      selector:
+        action:
+    button_on_long:
+      name: ON button hold
+      description: Action to run on hold of On button
+      default: []
+      selector:
+        action:
+    button_off_long:
+      name: OFF button hold
+      description: Action to run on hold of Off button
+      default: []
+      selector:
+        action:
+
+mode: restart
+max_exceeded: silent
+
+trigger:
+  - platform: event
+    event_type: deconz_event
+    event_data:
+      device_id: !input remote
+
+action:
+  - variables:
+      event: "{{ trigger.event.data.event }}"
+  - choose:
+      - conditions:
+          - "{{ event == 1002 }}"
+        sequence: !input button_on_short
+
+      - conditions:
+          - "{{ event == 2002 }}"
+        sequence: !input button_off_short
+
+      - conditions:
+          - "{{ event == 1001 }}"
+        sequence: !input button_on_long
+
+      - conditions:
+          - "{{ event == 2001 }}"
+        sequence: !input button_off_long
