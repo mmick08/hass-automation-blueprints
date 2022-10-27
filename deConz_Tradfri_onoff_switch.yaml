@@ -1,5 +1,5 @@
 blueprint:
-  name: deConz - IKEA Tradfri on/off switch
+  name: "deCONZ - IKEA Tradfri on/off switch - Custom Actions"
   description: Control anything using IKEA Tradfri on/off switch
 
   domain: automation
