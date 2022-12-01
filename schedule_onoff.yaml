@@ -1,0 +1,42 @@
+blueprint:
+  name: Schedule Helper ON/OFF Actions
+  description: This Blueprint helps you to use the schedule helper to trigger on and off actions
+
+  domain: automation
+  input:
+    schedule:
+      name: Used schedule helper
+      description: The schedule helper used to take actions
+      selector:
+        entity:
+          domain: schedule
+    schedule_on:
+      name: Action on schedule ON
+      default: []
+      selector:
+        action: {}
+    schedule_off:
+      name: Action on schedule OFF
+      default: []
+      selector:
+        action: {}
+
+trigger:
+  - platform: state
+    entity_id: !input schedule
+
+condition: []
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: !input schedule
+            state: "on"
+        sequence: !input schedule_on
+      - conditions:
+          - condition: state
+            entity_id: !input schedule
+            state: "off"
+        sequence: !input schedule_off
+mode: restart
