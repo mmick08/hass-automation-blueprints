@@ -1,0 +1,54 @@
+blueprint:
+  name: "ZHA - IKEA Tradfri shortcut switch - Custom Actions"
+  description: Control anything using IKEA Tradfri shortcut switch
+
+  domain: automation
+
+  input:
+    remote:
+      name: Switch
+      description: IKEA Tradfri shortcut switch to use
+      selector:
+        device:
+          manufacturer: IKEA of Sweden
+          model: TRADFRI SHORTCUT Button
+
+    button_short:
+      name: Button short PRESS
+      description: Action to run on press of On button
+      default: []
+      selector:
+        action:
+    button_hold:
+      name: Button on HOLD
+      description: Action to run on press of Off button
+      default: []
+      selector:
+        action:
+
+mode: restart
+max_exceeded: silent
+
+trigger:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_id: !input remote
+
+action:
+  - variables:
+      command: "{{ trigger.event.data.command }}"
+      cluster_id: "{{ trigger.event.data.cluster_id }}"
+      endpoint_id: "{{ trigger.event.data.endpoint_id }}"
+  - choose:
+      - conditions:
+          - "{{ endpoint_id == 1 }}"
+          - "{{ cluster_id == 6 }}"
+          - "{{ command == 'on' }}"
+        sequence: !input button_short
+
+      - conditions:
+          - "{{ endpoint_id == 1 }}"
+          - "{{ cluster_id == 8 }}"
+          - "{{ command == 'move_with_on_off' }}"
+        sequence: !input button_hold
